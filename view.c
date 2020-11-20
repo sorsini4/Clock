@@ -1,7 +1,7 @@
 /* view.c -- view module for clock project (the V in MVC)
  *
  * Darren Provine, 17 July 2009
- *
+ * Modified by S. Orsini Nov 19 2020
  * Copyright (C) Darren Provine, 2009-2019, All Rights Reserved
  */
 
@@ -38,7 +38,7 @@ void do_test(struct tm *dateinfo)
 char * make_timestring (struct tm *dateinfo, int dividers)
 {
     char *timeformat; // see strftime(3)
-    
+
     if ( view_props & DATE_MODE ) {
         // if dividers is true:
         //   make a string such as "10/31/12 dt" or " 3/17/12 dt"
@@ -47,6 +47,12 @@ char * make_timestring (struct tm *dateinfo, int dividers)
         //   make a string such as "103112d" or " 31712d"
         //   (note: no leading zero on month!)
         // 
+	if(dividers){
+            timeformat = "%-m/%d/%Y dt";
+	}
+	else{
+	    timeformat = "%-m%d%Yd";    
+	}
     } else {
         // if dividers is true:
         //   am/pm: make a string such as "11:13:52 am" or " 4:21:35 pm"
@@ -61,12 +67,20 @@ char * make_timestring (struct tm *dateinfo, int dividers)
         // see strftime(3) for details
         if ( dividers ) {
             if ( view_props & AMPM_MODE ) {
-                // do something
-            } else {
+		timeformat = "%l:%M:%S %p";
+            } 
+	    else {
                 timeformat = "%H:%M:%S 24";
             }
-        } else {
-        }
+        } 
+	else {
+            if(view_props & AMPM_MODE){
+		timeformat = "%l%M%S";
+	    }
+	    else {
+		timeformat = "%H%M%S";
+	    }
+	}
     }
 
     // make the timestring and return it
