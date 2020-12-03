@@ -49,7 +49,8 @@ void process_key(keybits KeyCode)
 
         // TODO: figure out KeyRow and KeyCol
 
-        KeyRow = 0; KeyCol = 0; // right now any click goes to 24hr mode
+        KeyRow = KeyCode & 0xf; KeyCol = (KeyCode & 0xf0) >> 4;
+        printf("%d, %d", KeyRow, KeyCol);        
 
         if (KeyRow == 0) {
             switch (KeyCol) {
@@ -160,7 +161,7 @@ int main(int argc, char *argv[])
         start_display();
         // has to be exactly 78 chars
         set_title_bar("----------------------------"
-                      " kilroy was here at: "
+                      " Steven was here at: "
                       "----------------------------");
         register_keyhandler(process_key);
 

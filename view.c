@@ -23,10 +23,9 @@ int get_view_properties()
     return view_props;
 }
 
-
+//this is where you turn all the bits on and then off for testing purposes
 void do_test(struct tm *dateinfo)
 {
-    // turn display bits on and off
     
     display();
     fflush(stdout);
@@ -47,12 +46,12 @@ char * make_timestring (struct tm *dateinfo, int dividers)
         //   make a string such as "103112d" or " 31712d"
         //   (note: no leading zero on month!)
         // 
-	if(dividers){
+	    if(dividers){
             timeformat = "%-m/%d/%Y dt";
-	}
-	else{
-	    timeformat = "%-m%d%Yd";    
-	}
+	    }
+	    else{
+	        timeformat = "%-m%d%Yd";    
+	    }
     } else {
         // if dividers is true:
         //   am/pm: make a string such as "11:13:52 am" or " 4:21:35 pm"
@@ -67,20 +66,20 @@ char * make_timestring (struct tm *dateinfo, int dividers)
         // see strftime(3) for details
         if ( dividers ) {
             if ( view_props & AMPM_MODE ) {
-		timeformat = "%l:%M:%S %p";
+		        timeformat = "%l:%M:%S %p";
             } 
-	    else {
+	        else {
                 timeformat = "%H:%M:%S 24";
             }
         } 
-	else {
-            if(view_props & AMPM_MODE){
-		timeformat = "%l%M%S";
-	    }
 	    else {
-		timeformat = "%H%M%S";
+            if(view_props & AMPM_MODE){
+		        timeformat = "%l%M%S";
+	        }
+	        else {
+		        timeformat = "%H%M%S";
+	        }
 	    }
-	}
     }
 
     // make the timestring and return it
@@ -109,18 +108,28 @@ void show_led(struct tm *dateinfo)
     for (i = 0; i < 6; i++) {
         switch ( make_timestring(dateinfo, 0)[i] ) {
             case ' ': bitvalues = 0x00; break;
-            case '1': bitvalues = 0x42; break;
-            case '2': bitvalues = 0x37; break;
-            case '3': bitvalues = 0x67; break;
-            case '4': bitvalues = 0x4b; break;
-            case '5': bitvalues = 0x6d; break;
-            case '6': bitvalues = 0x7d; break;
-            case '7': bitvalues = 0x46; break;
-            case '8': bitvalues = 0x7f; break;
-            case '9': bitvalues = 0x6f; break;
-            case '0': bitvalues = 0x7e; break;
+	        case '1': bitvalues = 0x24; break; //0010 0100
+            case '2': bitvalues = 0x5d; break; //0101 1101
+            case '3': bitvalues = 0x6d; break; //0110 1101
+            case '4': bitvalues = 0x2e; break; //0010 1110
+            case '5': bitvalues = 0x6b; break; //0110 1011 
+            case '6': bitvalues = 0x7b; break; //0111 1011
+            case '7': bitvalues = 0x25; break; //
+            case '8': bitvalues = 0x7f; break; //
+            case '9': bitvalues = 0x6f; break; //
+            case '0': bitvalues = 0x77; break; //0111 0111
         }
         where[i] = bitvalues;
+    }
+    if(view_props & AMPM_MODE){
+	where[7] = 0x01;
+    }
+    else{
+        where[7] = 0x04;
+    }
+
+    if(dateinfo->tm_sec % 2 == 0){
+    	where[7] |= 0xf0; //switch on colon dots
     }
     display();
     fflush(stdout);

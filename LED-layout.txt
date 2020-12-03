@@ -37,10 +37,11 @@ AM/PM/24H indicators.
 
 The bit values are:
 
+    AM indicator:    0x01
+    PM indicator:    0x02
     24H indicator:   0x04
-    AM indicator:    0x02
-    PM indicator:    0x01
-
+    Date indicator:  0x08
+    
     upper-left dot:  0x80
     lower-left dot:  0x40
     upper-right dot: 0x20
