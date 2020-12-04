@@ -1,0 +1,78 @@
+BUTTONS FOR THE VIRTUAL DIGITAL CLOCK
+
+
+BUTTON AND KEYBOARD FUNCTIONS:
+
+Each of the five buttons in the top row has a specific function, and
+each has a keyboard shortcut.  You should write code to make them
+all work.
+
+24 HR: switch to 24-hour mode.
+       (shortcut: "2")
+
+AM/PM: switch to AM/PM mode.
+       (shortcut: "a")
+
+DATE: activate date mode.
+       (shortcut: "d")
+
+      Turn off all the colons and the am/pm/24hr indicators, and
+      display the date instead of the time for 5 seconds.
+
+TEST: somehow test all the pretend LEDs.
+       (shortcut: "t")
+
+      Show all 8s, or make all the digits count up from 0-9, or
+      flash them all left-to-right, or something.  Make it nice.
+
+OFF: the clock should quit.
+       (shortcut: "q")
+
+
+MAKING YOUR OWN BUTTONS FOR EXTRA CREDIT:
+
+The second row of buttons can be used for anything you want.
+
+Past students have put in buttons for other time zones, such as UTC.  One
+student from India put in a button that showed the time in his hometown.
+(DO NOT do the timezone calculation yourself!  See the files in the
+folder "ZoneChange".)
+
+One common item is a timer, which uses several of the buttons:
+one to activate the timer, and then "start", "stop", and "reset".
+The timer should count up seconds.  (This can be done by making
+your own "struct tm" object and setting the values to the hours/
+minutes/seconds since the timer started, then calling show() with
+that instead of the result of localtime().)
+
+
+OPTION FLAGS:
+
+You can add flags for "-h", "-m", and "-s", letting the user specify
+the hour/minute/second that they want the clock to start at.  So you
+could run "./clock -a -h 14 -m 5 -s 15", and the clock would start at
+" 2:05:15 pm".  If used in conjunction with the "-o" flag, treat the
+h/m/s values as an offset from the current time.  So if it's noon,
+and you run "./clock -o -h 2", then it would start at 2pm.  (Note that
+these would be processed in the Controller.)
+
+Another idea might be "mirror mode", where you'd add a flag "-m" which
+makes the LEDs display so the time looks right in a mirror.  For this,
+the flag would automatically set "-l" if it's not already set.  Also,
+since you can't use the am/pm/24h indicators in reverse view, you'd
+need to turn those off.  (Note that this would require extra bits for
+the view settings, in "view.h", and you would need to put the logic
+for mirror mode in the View, in show_led().)
+
+
+OTHER STUFF:
+
+Note that the title bar is 78 characters; so you can put in not only
+your name, but you could put the date in the upper-right.  You could
+use the sysinfo(2) system call to put the total number of running
+processes, or the system load, or some other such information in the
+title bar.
+
+Someone once put an RSS reader into his clock, which displayed the
+Rowan University RSS feed in the title bar.
+

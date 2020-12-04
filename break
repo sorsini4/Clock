@@ -50,6 +50,7 @@ void process_key(keybits KeyCode)
         // TODO: figure out KeyRow and KeyCol
 
         KeyRow = KeyCode & 0xf; KeyCol = (KeyCode & 0xf0) >> 4;
+        printf("%d, %d", KeyRow, KeyCol);        
 
         if (KeyRow == 0) {
             switch (KeyCol) {
@@ -57,27 +58,17 @@ void process_key(keybits KeyCode)
                     view_props = get_view_properties();
                     view_props &= ( ~ AMPM_MODE );
                     set_view_properties (view_props);
-                    KeyCode = 0;
                     break;
                 case 1:
                     view_props = get_view_properties();
                     view_props |= ( AMPM_MODE );
                     set_view_properties (view_props);
-                    KeyCode = 0;
                     break;
                 case 2:
-                    view_props = get_view_properties();
-                    view_props |= (DATE_MODE);
-                    set_view_properties(view_props);
-                    date_mode_end = (int) time(NULL) + 5; //5 second pause
-                    KeyCode = 0;
+                    
                     break;
                 case 3:
-                    view_props = get_view_properties();                    
-                    view_props |= (TEST_MODE); //isnt this for the title bar? if so, wheres the var for test mode
-                    set_view_properties(view_props);
-                    test_mode_end = (int) time(NULL) + 5; //5 second pause as well
-                    KeyCode = 0;
+
                     break;
                 case 4:
                     stop_clock();
@@ -98,27 +89,15 @@ void process_key(keybits KeyCode)
                 view_props = get_view_properties();
                 view_props &= ( ~ AMPM_MODE );
                 set_view_properties (view_props);
-                KeyCode = 0;
                 break;
             case 'a':
                 view_props = get_view_properties();
                 view_props |= ( AMPM_MODE );
                 set_view_properties (view_props);
-                KeyCode = 0;
                 break;
             case 'd':
-                view_props = get_view_properties();
-                view_props |= (DATE_MODE);
-                set_view_properties (view_props);
-                date_mode_end = (int) time(NULL) + 5; //5 second pause
-                KeyCode = 0;
                 break;
             case 't':
-                view_props = get_view_properties();
-                view_props |= (TEST_MODE); //isnt this for the title bar? if so, wheres the var for test mode
-                set_view_properties (view_props);
-                test_mode_end = (int) time(NULL) + 5; //5 second pause
-                KeyCode = 0;
                 break;
             case 'q':
                 stop_clock();
@@ -145,7 +124,6 @@ int main(int argc, char *argv[])
     int ampm = 0;     // default to 24hr
     int date = 0;     // default to time
     int LED  = 0;     // default to text
-    
 
     // loop through all the options; getopt() can handle together or apart
     while ( ( letter = getopt(argc, argv, "adlo:vh")) != -1 ) {
@@ -190,6 +168,8 @@ int main(int argc, char *argv[])
         register_keyhandler(process_key);
 
         // turn on some keys in row 2
+        set_key_text(0, "blurfl");
+        set_key_text(1, "foobar");
     }
 
     /* get the model running */
@@ -218,14 +198,10 @@ void new_time(struct tm *dateinfo)
 
     // handle date mode
     if ( now > date_mode_end ) {
-        view_props = get_view_properties();
-        view_props &= (~DATE_MODE);
-        set_view_properties(view_props);
+        // put in code to turn off DATE bit
     }
     if ( now > test_mode_end ) {
-       view_props = get_view_properties();
-       view_props &= (~TEST_MODE);
-       set_view_properties(view_props);
+        // put in code to turn off TEST bit
     }    
 
     show(dateinfo);

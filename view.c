@@ -24,9 +24,12 @@ int get_view_properties()
 }
 
 //this is where you turn all the bits on and then off for testing purposes
-void do_test(struct tm *dateinfo)
-{
-    
+void do_test(struct tm *dateinfo){
+    digit *where = get_display_location();
+    where[7] = 0xff;
+    for(int i = 0; i < 6; i++){
+        where[i] = 0xff;
+    }
     display();
     fflush(stdout);
 }
@@ -96,8 +99,8 @@ void show_led(struct tm *dateinfo)
 
     digit *where = get_display_location();
     int i;
-    digit  bitvalues = 0;
-    int hour;
+    digit bitvalues = 0;
+    int hour = dateinfo->tm_hour;
     int indicator;
 
     if ( view_props & TEST_MODE ) {
@@ -120,9 +123,21 @@ void show_led(struct tm *dateinfo)
             case '0': bitvalues = 0x77; break; //0111 0111
         }
         where[i] = bitvalues;
-    }
+        where[7] |= 0xf0; //switch on colon dots
+    }  
+    
+    
+    
+
+
     if(view_props & AMPM_MODE){
-	where[7] = 0x01;
+    	where[7] &= ~0x04;
+        if(hour >= 12){
+            where[7] |= 0x02;
+        }
+        else{
+            where[7] |= 0x01;
+        }
     }
     else{
         where[7] = 0x04;
@@ -131,12 +146,21 @@ void show_led(struct tm *dateinfo)
     if(dateinfo->tm_sec % 2 == 0){
     	where[7] |= 0xf0; //switch on colon dots
     }
+   
+    if(view_props & DATE_MODE) {
+        where[7] = 0x08;
+    }
+   // else {
+   //     where[7] &= 0x04;
+   // }
+
     display();
     fflush(stdout);
 }
 
 void show_text(struct tm *dateinfo)
 {
+
     printf("\r%s ", make_timestring(dateinfo, 1));
     fflush(stdout);
 }

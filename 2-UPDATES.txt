@@ -1,0 +1,93 @@
+UPDATES TO THE DIGITAL CLOCK DISPLAY
+
+Since we started on the project, the vendor selling clock displays to
+our company has redesigned their product.  So some of what we did before
+has to be changed a little.  Fortunately, we didn't get too far into
+the project.
+
+NOTE: if the clock looks weird in PuTTy on Windows, go to the menu
+and choose "Change Settings".  Then you want Window->Translation->
+Remote Character Set, and choose "DEC-MCS".
+
+Read below to see what's different.
+
+
+
+TITLE BAR:
+
+There is a new function, "set_title_bar()", which takes the name of a
+character array.  It copies 81 characters out of the array to another
+memory location, and then copies the first 78 to the top line of the
+screen.  (Remember C strings are terminated by null characters.)  If
+the string contains a "-", then it shows as part of the frame.
+
+You should declare a character array and space it out enough so that it
+looks vaguely centered.  Then your main() function should call
+"set_title_bar()" with that array as an argument.
+
+Note: "set_title_bar()" copies 78 characters out of that memory location,
+so if you only have 15 characters, it will get the next 63 bytes anyway.
+That could result in random binary gibberish in the title bar, so be
+sure you fill in all 78 characters of the string you want in the title.
+
+
+
+STATUS LEDs:
+
+A fourth LED, 'Date', was added.
+
+
+
+BUTTON AND KEY EVENTS:
+
+The new "LEDisplay.o" device driver can respond to button presses.
+When a button is pressed, the device driver executes a "callback",
+which is a function you specify.  (A sample callback is provided.)
+
+The driver has a function with this prototype:
+
+    int register_keyhandler( void(*f)(keybits) );
+
+where "f" is a function which accepts an argument of type "keybits"
+and returns void.  For the driver to access the callback function,
+we have to say where in memory the compiled code for this function
+is stored.  If you name your function "process_key()", then you would
+put this in main():
+
+    register_keyhandler(process_key);
+
+(Note that you can just use the name of the function, because a function
+name is treated as a pointer.  DO NOT put the parentheses after the name,
+because that means "run this function and put the return value here".
+You don't want the function to run, you want to access it as an object.)
+
+
+The keycode passed to your callback function is 16 bits, with the
+following rules:
+
+ 1) If the user typed a key, then the first eight bits are the ASCII
+    keycode the the key that was typed, and the last eight bits are
+    all zero.  If the user presses 'q', then you'll get 0x7100 .
+    You can convert this to a simple character literal by shifting
+    eight bits to the right.
+
+ 2) If the user clicked a button with the mouse, the first eight bits
+    are all zero, and the last eight bits are split in two: the first
+    four are the column, and the last four are the row.
+    Rows and columns both start at "zero", so if I click the "24 Hr"
+    button, you'll get 0x0000.  If I click the middle button in the
+    bottom row, you'll get 0x0021.
+
+
+
+SETTING BUTTON TEXT:
+
+There is a new function, "set_key_text()", which takes an integer and
+a pointer to char.  The integer, in the range 0-4, indicates which
+button in row 2 you are setting.  The pointer should indicate what
+text you want to appear on the button, up to six characters.  (You
+can use extra spaces to center text on the button.)
+
+You cannot change the text of the top 5 buttons.
+
+
