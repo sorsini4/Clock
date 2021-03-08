@@ -125,10 +125,6 @@ void show_led(struct tm *dateinfo)
         where[i] = bitvalues;
         where[7] |= 0xf0; //switch on colon dots
     }  
-    
-    
-    
-
 
     if(view_props & AMPM_MODE){
     	where[7] &= ~0x04;
